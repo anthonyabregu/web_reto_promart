@@ -1,6 +1,8 @@
 import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import HomeView from "../views/HomeView.vue";
+import Home from "../views/Home.vue";
+import Formulario from "../views/Formulario.vue";
 
 Vue.use(VueRouter);
 
@@ -8,7 +10,12 @@ const routes: Array<RouteConfig> = [
   {
     path: "/",
     name: "home",
-    component: HomeView,
+    component: Home,
+  },
+  {
+    path: "/formulario",
+    name: "formulario",
+    component: Formulario,
   },
   {
     path: "/about",
