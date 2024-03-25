@@ -62,7 +62,7 @@
 
 <script lang="ts">
 import Vue from "vue";
-import axios from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 export default Vue.extend({
   name: "Home",
@@ -79,9 +79,7 @@ export default Vue.extend({
       },
     };
   },
-  created() {
-    this.showNotification("success", "Mensaje de prueba");
-  },
+  created() {},
   methods: {
     async submitForm() {
       try {
@@ -96,26 +94,40 @@ export default Vue.extend({
           );
         }
 
-        // const response = await axios.post(
-        //   `${process.env.VUE_APP_API_URL}client`,
-        //   this.formData
-        // );
+        const response: AxiosResponse = await axios.post(
+          `${process.env.VUE_APP_API_URL}client`,
+          this.formData
+        );
 
-        // setTimeout(() => {
-        //   this.showNotification("success", "Cliente guardado exitosamente");
-        // }, 1000);
+        if (response.status === 200) {
+          this.$toasted.success("Cliente guardado exitosamente");
+          console.log("OK");
+          return;
+        }
 
-        //this.$toasted.success("Cliente guardado exitosamente");
-
-        this.$toasted.show("Cliente guardado exitosamente", {
-          type: "success", // Tipo de notificación: success, error, info
-          duration: 3000, // Duración en milisegundos
-          position: "bottom-center", // Posición de la notificación: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
-        });
-
-        console.log("OK");
+        if (response.status >= 400 && response.status < 500) {
+          // La solicitud falló con un código de estado no exitoso
+          this.$toasted.error(response.data.error);
+          console.error("Error en la solicitud:", response.status);
+        }
       } catch (error) {
         console.error(error);
+        const axiosError = error as AxiosError;
+        if (axiosError.response && axiosError.response.status === 401) {
+          this.$toasted.show(`Error: Token no proporcionado`, {
+            type: "error",
+            duration: 3000,
+            position: "bottom-center",
+          });
+          console.error("Error en la solicitud:", axiosError.response.status);
+        } else {
+          console.error(error);
+          this.$toasted.show(`${error}`, {
+            type: "error",
+            duration: 3000,
+            position: "bottom-center",
+          });
+        }
       }
       // You can send the data to your backend here
     },
@@ -127,24 +139,6 @@ export default Vue.extend({
         this.formData.email &&
         this.formData.birthdate
       );
-    },
-
-    showNotification(type: string, message: string): void {
-      let title = "";
-      if (type === "success") {
-        title = "Éxito";
-      } else if (type === "error") {
-        title = "Error";
-      } else if (type === "warning") {
-        title = "Advertencia";
-      }
-
-      this.$notify({
-        type: type,
-        title: title,
-        text: message,
-        duration: 5000, // Duración en milisegundos
-      });
     },
   },
 });
