@@ -2,7 +2,9 @@ import Vue from "vue";
 import VueRouter, { RouteConfig } from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import Home from "../views/Home.vue";
-import Formulario from "../views/Formulario.vue";
+import Store from "../views/cliente/store.vue";
+import Edit from "../views/cliente/edit.vue";
+import List from "../views/cliente/list.vue";
 
 Vue.use(VueRouter);
 
@@ -13,9 +15,19 @@ const routes: Array<RouteConfig> = [
     component: Home,
   },
   {
-    path: "/formulario",
-    name: "formulario",
-    component: Formulario,
+    path: "/cliente/",
+    name: "cliente",
+    component: List,
+  },
+  {
+    path: "/cliente/store",
+    name: "store",
+    component: Store,
+  },
+  {
+    path: "/cliente/:id/edit",
+    name: "edit",
+    component: Edit,
   },
   {
     path: "/about",

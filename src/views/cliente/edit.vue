@@ -3,7 +3,7 @@
     <div class="mt-4 row justify-content-center">
       <div class="col-md-4">
         <b-card>
-          <h2 class="card-header">Formulario del Cliente</h2>
+          <h2 class="card-header">Datos del Cliente</h2>
           <b-card-body class="text-left">
             <b-form @submit.prevent="submitForm">
               <b-form-group>
@@ -27,7 +27,7 @@
               <b-form-group>
                 <b-form-input
                   id="mothers_surname"
-                  v-model="formData.mothers_surname"
+                  v-model="formData.mothersSurname"
                   type="text"
                   placeholder="Ingresa tu apellido materno"
                 ></b-form-input> </b-form-group
@@ -47,6 +47,7 @@
                   v-model="formData.birthdate"
                   type="date"
                   required
+                  format="yyyy-mm-dd"
                 ></b-form-datepicker> </b-form-group
               ><br />
               <b-button type="submit" variant="primary"
@@ -73,14 +74,24 @@ export default Vue.extend({
       formData: {
         name: "",
         surname: "",
-        mothers_surname: "",
+        mothersSurname: "",
         email: "",
         birthdate: "",
       },
     };
   },
-  created() {},
+  created() {
+    this.getClientId();
+  },
   methods: {
+    async getClientId() {
+      let id = this.$route.params.id;
+      const response = await axios.get(
+        `${process.env.VUE_APP_API_URL}client/${id}`
+      );
+      this.formData = response.data.data;
+      console.log(this.formData);
+    },
     async submitForm() {
       try {
         if (!this.validate()) {
@@ -94,32 +105,31 @@ export default Vue.extend({
           );
         }
 
-        const response: AxiosResponse = await axios.post(
-          `${process.env.VUE_APP_API_URL}client`,
+        const response: AxiosResponse = await axios.put(
+          `${process.env.VUE_APP_API_URL}client/${this.$route.params.id}`,
           this.formData
         );
 
         if (response.status === 200) {
-          this.$toasted.success("Cliente guardado exitosamente");
+          this.$toasted.show("Cliente guardado exitosamente", {
+            type: "success",
+            duration: 3000,
+            position: "bottom-center",
+          });
           console.log("OK");
           return;
-        }
-
-        if (response.status >= 400 && response.status < 500) {
-          // La solicitud falló con un código de estado no exitoso
-          this.$toasted.error(response.data.error);
-          console.error("Error en la solicitud:", response.status);
         }
       } catch (error) {
         console.error(error);
         const axiosError = error as AxiosError;
-        if (axiosError.response && axiosError.response.status === 401) {
-          this.$toasted.show(`Error: Token no proporcionado`, {
+        console.log("RESPONSE:", axiosError.response);
+        if (axiosError.response && axiosError.response.status >= 400) {
+          const errorData = axiosError.response.data as { error: string };
+          this.$toasted.show(`${errorData.error}`, {
             type: "error",
             duration: 3000,
             position: "bottom-center",
           });
-          console.error("Error en la solicitud:", axiosError.response.status);
         } else {
           console.error(error);
           this.$toasted.show(`${error}`, {
