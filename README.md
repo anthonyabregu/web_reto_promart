@@ -39,12 +39,12 @@ npm run lint
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
 
-### Rutas 
+### Rutas en la web
 
 ```
-    / -> Home donde aparece las imagenes
+    / -> Home donde aparece las imagenes en carrusel (cada 3 segundos)
     /cliente -> Lista de los clientes registrados
     /cliente/store -> Vista que permite registrar un nuevo cliente
     /cliente/:id/edit -> Vista que permite editar los datos de un cliente
-    
+
 ```
