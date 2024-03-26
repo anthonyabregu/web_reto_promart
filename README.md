@@ -37,3 +37,14 @@ npm run lint
 ### Customize configuration
 
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+
+### Rutas 
+
+```
+    / -> Home donde aparece las imagenes
+    /cliente -> Lista de los clientes registrados
+    /cliente/store -> Vista que permite registrar un nuevo cliente
+    /cliente/:id/edit -> Vista que permite editar los datos de un cliente
+    
+```
