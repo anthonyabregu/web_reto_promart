@@ -103,6 +103,7 @@ export default Vue.extend({
               position: "bottom-center", // Posición de la notificación: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
             }
           );
+          return;
         }
 
         const response: AxiosResponse = await axios.put(
@@ -143,12 +144,17 @@ export default Vue.extend({
     },
 
     validate(): boolean {
-      return !!(
-        this.formData.name &&
-        this.formData.surname &&
-        this.formData.email &&
-        this.formData.birthdate
-      );
+      let result = true;
+      if (
+        this.formData.name == "" ||
+        this.formData.surname == "" ||
+        this.formData.email == "" ||
+        this.formData.birthdate == ""
+      ) {
+        result = false;
+      }
+
+      return result;
     },
   },
 });

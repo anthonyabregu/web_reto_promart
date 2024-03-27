@@ -84,6 +84,7 @@ export default Vue.extend({
   methods: {
     async submitForm() {
       try {
+        console.log(this.validate());
         if (!this.validate()) {
           this.$toasted.show(
             "Todos los campos son obligatorios, exceptuando el apellido materno",
@@ -93,6 +94,7 @@ export default Vue.extend({
               position: "bottom-center", // Posición de la notificación: top-left, top-center, top-right, bottom-left, bottom-center, bottom-right
             }
           );
+          return;
         }
 
         const response: AxiosResponse = await axios.post(
@@ -100,7 +102,7 @@ export default Vue.extend({
           this.formData
         );
 
-        if (response.status === 200) {
+        if (response.status === 200 || response.status === 201) {
           this.$toasted.show("Cliente guardado exitosamente", {
             type: "success",
             duration: 3000,
@@ -109,12 +111,6 @@ export default Vue.extend({
           console.log("OK");
           return;
         }
-
-        // if (response.status >= 400 && response.status < 500) {
-        //   // La solicitud falló con un código de estado no exitoso
-        //   this.$toasted.error(response.data.error);
-        //   console.error("Error en la solicitud:", response.status);
-        // }
       } catch (error) {
         console.error(error);
         const axiosError = error as AxiosError;
@@ -139,12 +135,17 @@ export default Vue.extend({
     },
 
     validate(): boolean {
-      return !!(
-        this.formData.name &&
-        this.formData.surname &&
-        this.formData.email &&
-        this.formData.birthdate
-      );
+      let result = true;
+      if (
+        this.formData.name == "" ||
+        this.formData.surname == "" ||
+        this.formData.email == "" ||
+        this.formData.birthdate == ""
+      ) {
+        result = false;
+      }
+
+      return result;
     },
   },
 });
